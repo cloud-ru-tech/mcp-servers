@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mcp-artifact-registry:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: mcp-artifact-registry:latest
+    container_name: mcp-artifact-registry
+    ports:
+      - "8004:8004"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      # Cloud.ru API ключи - обязательные переменные окружения
+      - CLOUD_RU_KEY_ID=${CLOUD_RU_KEY_ID}
+      - CLOUD_RU_SECRET=${CLOUD_RU_SECRET}  
+      - CLOUD_RU_PROJECT_ID=${CLOUD_RU_PROJECT_ID}
+    restart: unless-stopped
+    volumes:
+      # Монтируем код для разработки (опционально, закомментировано для продакшена)
+      # - .:/app
+      # Логи
+      - ./logs:/app/logs
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/sse"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on: []
+
+networks:
+  mcp-network:
+    driver: bridge
+    name: mcp-artifact-registry-network
+    
+volumes:
+  logs:
+    driver: local 

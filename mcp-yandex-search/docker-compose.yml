@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  mcp-yandex-search:
+    build: .
+    ports:
+      - "8006:8006"
+    environment:
+      - YANDEX_API_KEY=${YANDEX_API_KEY}
+      - YANDEX_FOLDER_ID=${YANDEX_FOLDER_ID}
+      - YANDEX_VERIFY_SSL=false
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/sse"]
+      interval: 30s
+      timeout: 10s
+      retries: 3 

@@ -1,0 +1,1 @@
+# Тесты для MCP UFC Server 

@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  mcp-ip:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: mcp-ip-server
+    ports:
+      - "8003:8003"
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+      - UV_SYSTEM_PYTHON=1
+      # Переменные окружения для Python
+      - LANG=C.UTF-8
+    restart: unless-stopped
+    volumes:
+      # Для разработки: синхронизация изменений кода
+      - ./server.py:/app/server.py:ro
+      - ./test:/app/test:ro
+      # Монтируем pyproject.toml для отслеживания изменений зависимостей
+      - ./pyproject.toml:/app/pyproject.toml:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/sse/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # Ограничения ресурсов для стабильной работы
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25' 
+    networks:
+      - agent-network
+
+
+networks:
+  agent-network:
+    name: agent-network
+    driver: bridge
+    external: true

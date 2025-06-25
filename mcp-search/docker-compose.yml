@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  mcp-search:
+    build: .
+    container_name: mcp-search-server
+    ports:
+      - "8002:8002"
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      - UV_SYSTEM_PYTHON=1
+    volumes: []
+      # Для разработки можно размонтировать исходный код:
+      # - .:/app
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/sse/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  mcp-network:
+    driver: bridge 

@@ -1,0 +1,49 @@
+[project]
+name = "mcp-artifact-registry"
+version = "0.1.0"
+description = "MCP сервер для работы с Cloud.ru Artifact Registry"
+authors = [
+    {name = "MCP Team"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastmcp>=0.1.0",
+    "httpx>=0.24.0",
+    "uvicorn>=0.23.0",
+    "starlette>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.10.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.black]
+line-length = 88
+target-version = ['py313']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+asyncio_mode = "auto"
+markers = [
+    "integration: marks tests as integration tests (may require real API access)",
+] 
